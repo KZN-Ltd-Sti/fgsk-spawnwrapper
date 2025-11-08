@@ -9,17 +9,6 @@ local function debugPrint(...)
     print(('[fgsk-spawnwrapper] %s'):format(msg))
 end
 
-local function ensureModelLoaded(hash)
-    if HasModelLoaded(hash) then
-        return
-    end
-
-    RequestModel(hash)
-    while not HasModelLoaded(hash) do
-        Wait(0)
-    end
-end
-
 local function disableAutoSpawn()
     local ok, err = pcall(function()
         exports.spawnmanager:setAutoSpawn(false)
@@ -50,9 +39,7 @@ local function spawnAtCoords(payload)
     end
 
     local coords = payload.coords
-    local modelHash = GetHashKey(Config.DefaultModel or 'mp_m_freemode_01')
-
-    ensureModelLoaded(modelHash)
+    local model = Config.DefaultModel or 'mp_m_freemode_01'
 
     debugPrint(('Spawning at %s via %s'):format(payload.name or 'Unknown', payload.sourceType or 'unknown'))
 
@@ -61,22 +48,9 @@ local function spawnAtCoords(payload)
         y = coords.y,
         z = coords.z,
         heading = coords.heading or payload.heading or 0.0,
-        model = modelHash,
+        model = model,
         skipFade = false
     }, function()
-        SetModelAsNoLongerNeeded(modelHash)
-
-        local ped = PlayerPedId()
-        if DoesEntityExist(ped) then
-            -- Ensure the ped is visible/collidable after spawn.
-            ResetEntityAlpha(ped)
-            SetEntityAlpha(ped, 255, false)
-            SetEntityVisible(ped, true, false)
-            SetEntityCollision(ped, true, true)
-            ClearPedTasksImmediately(ped)
-            SetPedDefaultComponentVariation(ped)
-        end
-
         spawnRequested = false
         TriggerServerEvent('fgsk-spawnwrapper:spawned', {
             coords = coords,

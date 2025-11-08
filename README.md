@@ -4,7 +4,7 @@ Resource that wraps the stock FiveM `spawnmanager` to provide custom spawn logic
 
 ## Features
 - Disables `spawnmanager` auto-spawn and triggers spawning only after the intro resource signals readiness.
-- Calls `exports.spawnmanager:spawnPlayer` with streamed ped models, ensuring the character is visible and collidable after each spawn.
+- Delegates model streaming/visibility to the official `spawnmanager:spawnPlayer`, so we inherit the stock, battle-tested spawn flow.
 - Persists player coordinates in `player_spawns` via oxmysql, so reconnects return to the last position (with fallback default spawns).
 - Exposes simple events (`fgsk-spawnwrapper:begin`, `fgsk-spawnwrapper:spawnPlayer`, `fgsk-spawnwrapper:spawned`) for other resources to hook into (e.g., loading screens or inventory resets).
 
